@@ -3,6 +3,18 @@ project(lab05)
 
 option(BUILD_TESTS "Build tests" OFF)
 
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+
+if(CODE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        message(STATUS "Code coverage enabled")
+        add_compile_options(--coverage -O0 -g)
+        add_link_options(--coverage)
+    else()
+        message(WARNING "Code coverage not supported by this compiler")
+    endif()
+endif()
+
 add_subdirectory(banking)
 
 if(BUILD_TESTS)
