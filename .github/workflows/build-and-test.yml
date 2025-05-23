@@ -24,6 +24,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake lcov
 
+      - name: Download googletest 1.8.1
+        run: |
+          rm -rf third-party/gtest
+          git clone --branch release-1.8.1 --depth 1 https://github.com/google/googletest.git third-party/gtest
+
       - name: Configure CMake with coverage
         run: cmake -S . -B build -DBUILD_TESTS=ON -DCODE_COVERAGE=ON
 
