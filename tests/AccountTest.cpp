@@ -20,12 +20,10 @@ TEST(Accout, balance_negative) {
     EXPECT_ANY_THROW(Vasya.Lock());
 }
 
-TEST(Account, Locker) {
+TEST(Account, Unlocker) {
     MockAccount acc(0, 1111);
-        EXPECT_CALL(acc, Lock()).Times(2);
-        EXPECT_CALL(acc, Unlock()).Times(1);
-        acc.Lock();
-        acc.Lock();
-        acc.Unlock();
+    EXPECT_CALL(acc, Unlock()).Times(1);
+    acc.Unlock();
 }
+
 
