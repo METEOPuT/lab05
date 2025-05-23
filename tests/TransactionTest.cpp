@@ -39,8 +39,8 @@ TEST_F(TransactionTest, SuccessfulTransaction) {
 
     EXPECT_CALL(to, ChangeBalance(100)).Times(1);
 
-    EXPECT_CALL(to, GetBalance()).Times(1).WillOnce(Return(1000));
-    EXPECT_CALL(to, ChangeBalance(-101)).Times(1);
+    EXPECT_CALL(from, GetBalance()).Times(1).WillOnce(Return(1000));
+    EXPECT_CALL(from, ChangeBalance(-101)).Times(1);
 
     EXPECT_CALL(from, Unlock()).Times(1);
     EXPECT_CALL(to, Unlock()).Times(1);
@@ -56,7 +56,7 @@ TEST_F(TransactionTest, DebitFailsAndRevertsCredit) {
 
     EXPECT_CALL(to, ChangeBalance(200)).Times(1);
 
-    EXPECT_CALL(to, GetBalance()).Times(1).WillOnce(Return(50));
+    EXPECT_CALL(from, GetBalance()).Times(1).WillOnce(Return(50));
     EXPECT_CALL(to, ChangeBalance(-200)).Times(1);
 
     EXPECT_CALL(from, Unlock()).Times(1);
