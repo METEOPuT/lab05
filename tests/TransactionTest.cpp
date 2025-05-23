@@ -16,34 +16,23 @@ protected:
 
 TEST_F(TransactionTest, ThrowsIfSameAccount) {
     MockAccount acc(1, 1000);
-    EXPECT_CALL(acc, id()).Times(1).WillOnce(Return(1));
     EXPECT_THROW(tx.Make(acc, acc, 100), std::logic_error);
 }
 
 TEST_F(TransactionTest, ThrowsIfNegativeSum) {
-    EXPECT_CALL(from, id()).Times(1).WillOnce(Return(1));
-    EXPECT_CALL(to, id()).Times(1).WillOnce(Return(2));
     EXPECT_THROW(tx.Make(from, to, -10), std::invalid_argument);
 }
 
 TEST_F(TransactionTest, ThrowsIfSumTooSmall) {
-    EXPECT_CALL(from, id()).Times(1).WillOnce(Return(1));
-    EXPECT_CALL(to, id()).Times(1).WillOnce(Return(2));
     EXPECT_THROW(tx.Make(from, to, 50), std::logic_error);
 }
 
 TEST_F(TransactionTest, ReturnsFalseIfFeeTooHigh) {
-    EXPECT_CALL(from, id()).Times(1).WillOnce(Return(1));
-    EXPECT_CALL(to, id()).Times(1).WillOnce(Return(2));
-
     EXPECT_FALSE(tx.Make(from, to, 2));
 }
 
 TEST_F(TransactionTest, SuccessfulTransaction) {
     InSequence s;
-
-    EXPECT_CALL(from, id()).Times(1).WillOnce(Return(1));
-    EXPECT_CALL(to, id()).Times(1).WillOnce(Return(2));
 
     EXPECT_CALL(from, Lock()).Times(1);
     EXPECT_CALL(to, Lock()).Times(1);
@@ -61,9 +50,6 @@ TEST_F(TransactionTest, SuccessfulTransaction) {
 
 TEST_F(TransactionTest, DebitFailsAndRevertsCredit) {
     InSequence s;
-
-    EXPECT_CALL(from, id()).Times(1).WillOnce(Return(1));
-    EXPECT_CALL(to, id()).Times(1).WillOnce(Return(2));
 
     EXPECT_CALL(from, Lock()).Times(1);
     EXPECT_CALL(to, Lock()).Times(1);
