@@ -28,7 +28,8 @@ TEST_F(TransactionTest, ThrowsIfSumTooSmall) {
 }
 
 TEST_F(TransactionTest, ReturnsFalseIfFeeTooHigh) {
-    EXPECT_FALSE(tx.Make(from, to, 2));
+    tx.set_fee(51);
+    EXPECT_FALSE(tx.Make(from, to, 101));
 }
 
 TEST_F(TransactionTest, SuccessfulTransaction) {
