@@ -35,13 +35,16 @@ TEST_F(TransactionTest, ReturnsFalseIfFeeTooHigh) {
 TEST_F(TransactionTest, SuccessfulTransaction) {
     InSequence s;
 
-    EXPECT_CALL(from, Lock()).Times(1);
-    EXPECT_CALL(to, Lock()).Times(1);
+    EXPECT_CALL(from, Lock());
+    EXPECT_CALL(to, Lock());
 
-    EXPECT_CALL(to, ChangeBalance(100)).Times(1);
+    EXPECT_CALL(to, ChangeBalance(100));
 
-    EXPECT_CALL(from, GetBalance()).Times(1).WillOnce(Return(1000));
-    EXPECT_CALL(from, ChangeBalance(-101)).Times(1);
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(1000));
+    EXPECT_CALL(from, ChangeBalance(-101));
+
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(899));
+    EXPECT_CALL(to, GetBalance()).WillOnce(Return(1100));
 
     EXPECT_CALL(from, Unlock()).Times(1);
     EXPECT_CALL(to, Unlock()).Times(1);
@@ -52,16 +55,22 @@ TEST_F(TransactionTest, SuccessfulTransaction) {
 TEST_F(TransactionTest, DebitFailsAndRevertsCredit) {
     InSequence s;
 
-    EXPECT_CALL(from, Lock()).Times(1);
-    EXPECT_CALL(to, Lock()).Times(1);
+    EXPECT_CALL(from, Lock());
+    EXPECT_CALL(to, Lock());
 
-    EXPECT_CALL(to, ChangeBalance(200)).Times(1);
+    EXPECT_CALL(to, ChangeBalance(200));
 
-    EXPECT_CALL(from, GetBalance()).Times(1).WillOnce(Return(50));
-    EXPECT_CALL(to, ChangeBalance(-200)).Times(1);
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(1000));
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(199));
+    EXPECT_CALL(from, ChangeBalance(-201)).Times(1);
 
-    EXPECT_CALL(from, Unlock()).Times(1);
-    EXPECT_CALL(to, Unlock()).Times(1);
+    EXPECT_CALL(to, ChangeBalance(-200));
+
+    EXPECT_CALL(from, GetBalance()).WillOnce(Return(199));
+    EXPECT_CALL(to, GetBalance()).WillOnce(Return(700));
+
+    EXPECT_CALL(from, Unlock());
+    EXPECT_CALL(to, Unlock());
 
     EXPECT_FALSE(tx.Make(from, to, 200));
 }
