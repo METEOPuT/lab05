@@ -10,4 +10,3 @@ public:
     MOCK_METHOD0(Lock, void());
     MOCK_METHOD0(Unlock, void());
 };
-
