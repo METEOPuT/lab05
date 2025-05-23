@@ -49,7 +49,7 @@ TEST_F(TransactionTest, SuccessfulTransaction) {
     EXPECT_TRUE(tx.Make(from, to, 100));
 }
 
-TEST_F(TransactionTest, DebitFailsAndRevertsCredit) {
+TEST_F(TransactionTest, DebitTrue) {
     InSequence s;
 
     EXPECT_CALL(from, Lock());
@@ -61,4 +61,13 @@ TEST_F(TransactionTest, DebitFailsAndRevertsCredit) {
     EXPECT_CALL(from, GetBalance()).WillOnce(Return(199));
 
     EXPECT_TRUE(tx.Make(from, to, 200));
+}
+
+TEST_F(TransactionTest, DebitFalse) {
+    InSequence s;
+
+    EXPECT_CALL(from, Lock());
+    EXPECT_CALL(to, Lock());
+
+    EXPECT_FALSE(tx.Make(from, to, 200));
 }
