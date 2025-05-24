@@ -7,67 +7,38 @@ using ::testing::Return;
 using ::testing::Throw;
 using ::testing::InSequence;
 
-class TransactionTest : public ::testing::Test {
-protected:
-    Transaction tx;
-    MockAccount from{1, 1000};
-    MockAccount to{2, 500};
-};
+TEST(Transaction, construnct_and_positive) {
+    Transaction first;
+    EXPECT_EQ(first.fee(), 1);
 
-TEST_F(TransactionTest, ThrowsIfSameAccount) {
-    MockAccount acc(1, 1000);
-    EXPECT_THROW(tx.Make(acc, acc, 100), std::logic_error);
+    Account Petya(0, 6132);
+    Account Katya(1, 2133);
+
+    first.set_fee(32);
+    EXPECT_EQ(first.fee(), 32);
+
+    EXPECT_TRUE(first.Make(Petya, Katya, 100));
+    EXPECT_EQ(Katya.GetBalance(), 2233);
+    EXPECT_EQ(Petya.GetBalance(), 6000);
+
 }
 
-TEST_F(TransactionTest, ThrowsIfNegativeSum) {
-    EXPECT_THROW(tx.Make(from, to, -10), std::invalid_argument);
-}
+TEST(Transaction, negative) {
+    Transaction second;
+    second.set_fee(51);
+    Account Roma(0, 10);
+    Account Misha(1, 1000);
 
-TEST_F(TransactionTest, ThrowsIfSumTooSmall) {
-    EXPECT_THROW(tx.Make(from, to, 50), std::logic_error);
-}
+    EXPECT_THROW(second.Make(Misha, Misha, 0), std::logic_error);
 
-TEST_F(TransactionTest, ReturnsFalseIfFeeTooHigh) {
-    tx.set_fee(51);
-    EXPECT_FALSE(tx.Make(from, to, 101));
-}
+    EXPECT_THROW(second.Make(Misha, Roma, -100), std::invalid_argument);
 
-TEST_F(TransactionTest, SuccessfulTransaction) {
-    InSequence s;
+    EXPECT_THROW(second.Make(Misha, Roma, 50), std::logic_error);
 
-    EXPECT_CALL(from, Lock());
-    EXPECT_CALL(to, Lock());
+    EXPECT_FALSE(second.Make(Misha, Roma, 100));
 
-    EXPECT_CALL(to, ChangeBalance(100));
+    second.set_fee(10);
 
-    EXPECT_CALL(from, GetBalance()).WillOnce(Return(1000));
-    EXPECT_CALL(from, ChangeBalance(-101));
+    EXPECT_FALSE(second.Make(Roma, Misha, 100));
 
-    EXPECT_CALL(from, GetBalance()).WillOnce(Return(899));
-    EXPECT_CALL(to, GetBalance()).WillOnce(Return(1100));
-
-    EXPECT_TRUE(tx.Make(from, to, 100));
-}
-
-TEST_F(TransactionTest, DebitTrue) {
-    InSequence s;
-
-    EXPECT_CALL(from, Lock());
-    EXPECT_CALL(to, Lock());
-
-    EXPECT_CALL(to, ChangeBalance(200));
-
-    EXPECT_CALL(from, GetBalance()).WillOnce(Return(1000));
-    EXPECT_CALL(from, GetBalance()).WillOnce(Return(199));
-
-    EXPECT_TRUE(tx.Make(from, to, 200));
-}
-
-TEST_F(TransactionTest, DebitFalse) {
-    InSequence s;
-
-    EXPECT_CALL(from, Lock());
-    EXPECT_CALL(to, Lock());
-
-    EXPECT_FALSE(tx.Make(from, to, 200));
 }
