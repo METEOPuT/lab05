@@ -26,6 +26,8 @@ TEST(Account, Locker) {
 	EXPECT_CALL(acc, Unlock()).Times(1);
 	acc.Lock();
 	acc.Lock();
+	EXPECT_EQ(acc.GetBalance(), 0);
+	EXPECT_NO_THROW(acc.ChangeBalance(100));
 	acc.Unlock();
 }
 
