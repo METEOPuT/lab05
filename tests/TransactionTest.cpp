@@ -22,7 +22,7 @@ TEST(Transaction, Make_calls_correct_methods) {
 
         EXPECT_CALL(to, ChangeBalance(100));
 
-        EXPECT_CALL(from, GetBalance())
+        EXPECT_CALL(from, GetBalance()).Times(testing::AnyNumber())
             .WillRepeatedly(Return(1100));
 
         EXPECT_CALL(from, ChangeBalance(-101));
@@ -48,7 +48,7 @@ TEST(Transaction, Make_fails_if_insufficient_funds) {
 
     EXPECT_CALL(to, ChangeBalance(100));
 
-    EXPECT_CALL(from, GetBalance())
+    EXPECT_CALL(from, GetBalance()).Times(testing::AnyNumber())
         .WillRepeatedly(Return(105));
 
     EXPECT_CALL(to, ChangeBalance(-100));
