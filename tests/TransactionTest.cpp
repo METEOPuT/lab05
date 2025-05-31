@@ -7,38 +7,54 @@ using ::testing::Return;
 using ::testing::Throw;
 using ::testing::InSequence;
 
-TEST(Transaction, construnct_and_positive) {
-    Transaction first;
-    EXPECT_EQ(first.fee(), 1);
+TEST(Transaction, Make_calls_correct_methods) {
+    Transaction transaction;
+    transaction.set_fee(1);
 
-    Account Petya(0, 6132);
-    Account Katya(1, 2133);
+    MockAccount from(0, 1000);
+    MockAccount to(1, 500);
 
-    first.set_fee(32);
-    EXPECT_EQ(first.fee(), 32);
+    {
+        InSequence seq;
 
-    EXPECT_TRUE(first.Make(Petya, Katya, 100));
-    EXPECT_EQ(Katya.GetBalance(), 2233);
-    EXPECT_EQ(Petya.GetBalance(), 6000);
+        EXPECT_CALL(from, Lock());
+        EXPECT_CALL(to, Lock());
 
+        EXPECT_CALL(to, ChangeBalance(100));
+
+        EXPECT_CALL(from, GetBalance())
+            .WillRepeatedly(Return(1100));
+
+        EXPECT_CALL(from, ChangeBalance(-101));
+
+        EXPECT_CALL(to, Unlock());
+        EXPECT_CALL(from, Unlock());
+    }
+
+    EXPECT_TRUE(transaction.Make(from, to, 100));
 }
 
-TEST(Transaction, negative) {
-    Transaction second;
-    second.set_fee(51);
-    Account Roma(0, 10);
-    Account Misha(1, 1000);
+TEST(Transaction, Make_fails_if_insufficient_funds) {
+    Transaction transaction;
+    transaction.set_fee(10);
 
-    EXPECT_THROW(second.Make(Misha, Misha, 0), std::logic_error);
+    MockAccount from(0, 100);
+    MockAccount to(1, 200);
 
-    EXPECT_THROW(second.Make(Misha, Roma, -100), std::invalid_argument);
+    InSequence seq;
 
-    EXPECT_THROW(second.Make(Misha, Roma, 50), std::logic_error);
+    EXPECT_CALL(from, Lock());
+    EXPECT_CALL(to, Lock());
 
-    EXPECT_FALSE(second.Make(Misha, Roma, 100));
+    EXPECT_CALL(to, ChangeBalance(100));
 
-    second.set_fee(10);
+    EXPECT_CALL(from, GetBalance())
+        .WillRepeatedly(Return(105));
 
-    EXPECT_FALSE(second.Make(Roma, Misha, 100));
+    EXPECT_CALL(to, ChangeBalance(-100));
 
+    EXPECT_CALL(to, Unlock());
+    EXPECT_CALL(from, Unlock());
+
+    EXPECT_FALSE(transaction.Make(from, to, 100));
 }
