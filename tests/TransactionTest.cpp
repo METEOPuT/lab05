@@ -27,6 +27,12 @@ TEST(Transaction, Make_calls_correct_methods) {
 
         EXPECT_CALL(from, ChangeBalance(-101));
 
+	EXPECT_CALL(from, GetBalance()).Times(testing::AnyNumber())
+            .WillRepeatedly(Return(999));
+
+	EXPECT_CALL(to, GetBalance()).Times(testing::AnyNumber())
+            .WillRepeatedly(Return(600));
+
         EXPECT_CALL(to, Unlock());
         EXPECT_CALL(from, Unlock());
     }
@@ -52,6 +58,12 @@ TEST(Transaction, Make_fails_if_insufficient_funds) {
         .WillRepeatedly(Return(105));
 
     EXPECT_CALL(to, ChangeBalance(-100));
+
+    EXPECT_CALL(from, GetBalance()).Times(testing::AnyNumber())
+        .WillRepeatedly(Return(105));
+
+    EXPECT_CALL(to, GetBalance()).Times(testing::AnyNumber())
+        .WillRepeatedly(Return(200));
 
     EXPECT_CALL(to, Unlock());
     EXPECT_CALL(from, Unlock());
