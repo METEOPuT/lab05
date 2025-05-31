@@ -75,8 +75,9 @@ TEST(Account, Unlock_method_covered) {
     Account acc(123, 500);
 
     acc.Lock();
-    acc.Unlock();
 
     EXPECT_NO_THROW(acc.ChangeBalance(50));
     EXPECT_EQ(acc.GetBalance(), 550);
+
+    acc.Unlock();
 }
