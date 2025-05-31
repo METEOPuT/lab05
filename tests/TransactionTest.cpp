@@ -70,3 +70,13 @@ TEST(Transaction, Make_fails_if_insufficient_funds) {
 
     EXPECT_FALSE(transaction.Make(from, to, 100));
 }
+
+TEST(Account, Unlock_method_covered) {
+    Account acc(123, 500);
+
+    acc.Lock();
+    acc.Unlock();
+
+    EXPECT_NO_THROW(acc.ChangeBalance(50));
+    EXPECT_EQ(acc.GetBalance(), 550);
+}
